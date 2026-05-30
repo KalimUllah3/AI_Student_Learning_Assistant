@@ -1,0 +1,21 @@
+<h1>Question History</h1>
+
+{% for q in questions %}
+
+<hr>
+
+<p>
+    <strong>Question:</strong>
+    {{ q.question }}
+</p>
+
+<p>
+    <strong>Answer:</strong>
+    {{ q.answer }}
+</p>
+
+{% empty %}
+
+<p>No questions asked yet.</p>
+
+{% endfor %}

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Document
+from .models import Document, QuestionAnswer
 
 # admin.site.register(Document)
 @admin.register(Document)
@@ -12,3 +12,6 @@ class DocumentAdmin(admin.ModelAdmin):
         'extracted_text',
         'summary'
     )
+@admin.register(QuestionAnswer)
+class QuestionAnswerAdmin(admin.ModelAdmin):
+    list_display= ('document','question')

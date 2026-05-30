@@ -5,7 +5,7 @@ import fitz
 from google import genai
 from django.conf import settings
 from .forms import QuestionForm
-from .models import Document, QuestionAnswer
+from .models import Document, QuestionAnswer, Quiz
 
 @login_required
 def upload_document(request):
@@ -28,8 +28,9 @@ def upload_document(request):
     return render(request, 'documents/upload.html', {'form': form})
 
 def document_list(request):
+    print("USER:", request.user)
     documents = Document.objects.filter(user=request.user)
-
+    print("DOC COUNT:", documents.count())
     return render(
         request,
         'documents/document_list.html',
@@ -37,16 +38,11 @@ def document_list(request):
     )
 def extract_text_from_pdf(pdf_path):
     text = ""
-
     pdf = fitz.open(pdf_path)
-
     for page in pdf:
         text += page.get_text()
-
     pdf.close()
-
     return text
-
 def generate_summary(text):
     client = genai.Client(api_key=settings.GEMINI_API_KEY)
     prompt = f"""
@@ -102,5 +98,51 @@ def ask_question(request, document_id):
             'document': document,
             'form': form,
             'answer': answer
+        }
+    )
+
+@login_required
+def question_history(request):
+
+    questions = QuestionAnswer.objects.filter(
+        document__user=request.user).order_by('-id')
+    return render(request,'documents/question_history.html',
+        { 'questions': questions })
+
+def generate_quiz(text):
+    client = genai.Client(
+        api_key=settings.GEMINI_API_KEY
+    )
+    prompt = f"""
+    Generate 5 multiple-choice questions (MCQs)
+    from the following study material.
+    Include:
+    - Question
+    - 4 options
+    - Correct Answer
+    Text:
+    {text[:10000]}
+    """
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
+    )
+    return response.text
+
+@login_required
+def generate_document_quiz(request, document_id):
+    document = Document.objects.get(id=document_id)
+    quiz_text = generate_quiz(
+        document.extracted_text
+    )
+    quiz = Quiz.objects.create(
+        document=document,
+        quiz_text=quiz_text
+    )
+    return render(
+        request,
+        'documents/quiz.html',
+        {
+            'quiz': quiz
         }
     )

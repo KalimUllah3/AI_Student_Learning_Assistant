@@ -20,3 +20,10 @@ class QuestionAnswer(models.Model):
 
     def __str__(self):
         return self.question[:50]
+
+class Quiz(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    quiz_text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"Quiz - {self.document.title}"
