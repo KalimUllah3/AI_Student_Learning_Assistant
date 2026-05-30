@@ -15,7 +15,14 @@
     {% empty %}
         <li>No documents uploaded yet.</li>
     {% endfor %}
+    
 </ul>
+<li>
+    {{ document.title }}
+
+    <a href="/ask/{{ document.id }}/">
+        Ask Questions
+    </a> </li>
 
 </body>
 </html>

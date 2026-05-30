@@ -11,3 +11,12 @@ class Document(models.Model):
 
     def __str__(self):
         return self.title
+    
+class QuestionAnswer(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    question = models.TextField()
+    answer = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.question[:50]

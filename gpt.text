@@ -1,0 +1,112 @@
+his is not an error that stops your Django app.
+Your server is running successfully.
+The important lines are:
+System check identified no issues (0 silenced).Starting development server at http://127.0.0.1:8000/
+That means your Django project started correctly.
+
+What the warning means
+You are using this import:
+import google.generativeai as genai
+Google is telling you that:
+
+
+the old package google.generativeai is deprecated
+
+
+it will no longer receive updates
+
+
+you should move to the new package:
+
+
+google-genai
+So this is a FutureWarning, not a crash.
+
+Why this happens
+In your file:
+documents/views.py
+line 5 contains:
+import google.generativeai as genai
+That package belongs to the old Gemini SDK.
+Google replaced it with the newer SDK:
+
+
+OLD:
+google.generativeai
+
+
+NEW:
+from google import genai
+
+
+
+How to fix it
+Step 1 — Uninstall old package
+Open terminal:
+pip uninstall google-generativeai
+
+Step 2 — Install new package
+pip install google-genai
+Official package: google-genai SDK
+Migration guide:
+Gemini migration guide
+
+Step 3 — Update your code
+OLD CODE
+import google.generativeai as genaigenai.configure(api_key="YOUR_API_KEY")model = genai.GenerativeModel("gemini-pro")response = model.generate_content("Hello")print(response.text)
+
+NEW CODE
+from google import genaiclient = genai.Client(api_key="YOUR_API_KEY")response = client.models.generate_content(    model="gemini-2.0-flash",    contents="Hello")print(response.text)
+
+Your Django project is still working
+This line:
+WARNING: This is a development server. Do not use it in a production setting.
+is completely normal.
+Django always shows this when you run:
+python manage.py runserver
+It simply means:
+
+
+good for development/testing
+
+
+not secure/performance-optimized for real deployment
+
+
+For production later, you will use:
+
+
+Gunicorn
+
+
+Uvicorn
+
+
+Nginx
+
+
+Docker
+
+
+etc.
+
+
+
+Final summary
+You currently have:
+✅ Django running correctly
+✅ No system issues
+✅ Development server active
+You only need to:
+
+
+uninstall old Gemini package
+
+
+install google-genai
+
+
+update import statements and API calls
+
+
+Then the warning disappears.
